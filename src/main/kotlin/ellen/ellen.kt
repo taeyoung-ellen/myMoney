@@ -1,14 +1,28 @@
 package ellen
 
 import data.*
-
+// todo userinfo를 ellen으로
+// todo name을 memo로
+//
 // import data????
 var id = 0
 var money = 0 // 나중에 값 넣기
 var comment = ""
+var userInfo = myMoneyData.filter { it.idVal == id }
 
 fun main(){
+//    println(selectQuery("select * from ellen order by num desc"))
 
+
+    var query = "insert into ellen(price , memo) values('999','테 스 트')"
+    query(query)
+//
+//    query = "delete from ellen where seq=43"
+//    query(query)
+//
+//    selectQuery("select * from ellen order by seq desc")?.forEach {
+//        println(it.seq + " " + it.name)
+//    }
 }
 
 fun logIn() {
@@ -45,7 +59,7 @@ fun runProgram() {
             }
             "3" -> {
 
-                deleteMoney(0)
+                deleteMoney(0) // todo 고치기
             }
             "4" -> {
                 logIn()
@@ -60,13 +74,36 @@ fun creditMoney(money: Int, comment: String) {
 // 입금
 
 fun debitMoney(money: Int, comment: String) {
-    var minusMoney = ("-$money").toInt() //todo yeahhhhhhh
+    var minusMoney = ("-$money").toInt()
     myMoneyData.add(MoneyData(minusMoney, comment, id))
 }
 //출금
 
 fun deleteMoney(indexNum : Int){
-
+    for (i in 0 .. userInfo.size){
+        print("#" + ( i + 1 ) + "금액 : " + userInfo[i].money + " 내용 : " + userInfo[i].comment )
+        if((i + 1) % 3 == 0 ){
+            println()
+        }
+    }
+//    userInfo.remove()// todo 유저인포의 리드라인번째 값 지우기
 }
 // 삭제
 
+////////////
+
+
+//예제
+/*
+println(selectQuery("select * from userInfo order by seq desc"))
+
+var query = "insert into userInfo(name) values('테스트이름')"
+query(query)
+
+query = "delete from userInfo where seq=43"
+query(query)
+
+selectQuery("select * from userInfo order by seq desc")?.forEach {
+    println(it.num + " " + it.name)
+}
+*/
