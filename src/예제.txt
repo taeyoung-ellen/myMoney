@@ -1,0 +1,110 @@
+    println(selectQuery("select * from userInfo order by seq desc"))
+
+    var query = "insert into userInfo(name) values('테스트이름')"
+    query(query)
+
+    query = "delete from userInfo where seq=43"
+    query(query)
+
+    selectQuery("select * from userInfo order by seq desc")?.forEach {
+        println(it.seq + " " + it.name)
+    }
+
+
+///
+data class User(val seq: String, val name: String)
+///
+internal var conn: Connection? = null
+
+fun selectQuery(queryString: String): ArrayList<User>? {
+    getConn()
+    var stmt: Statement? = null
+    var resultset: ResultSet? = null
+
+    try {
+        stmt = conn!!.createStatement()
+        if (stmt.execute(queryString)) {
+            resultset = stmt.resultSet
+        }
+
+        var users = ArrayList<User>()
+        while (resultset!!.next()) {
+            users.add(User(resultset.getString("seq"), resultset.getString("name")))
+        }
+
+        return users
+    } catch (ex: SQLException) {
+        ex.printStackTrace()
+    } finally {
+        if (resultset != null) {
+            try {
+                resultset.close()
+            } catch (sqlEx: SQLException) {
+            }
+            resultset = null
+        }
+        if (stmt != null) {
+            try {
+                stmt.close()
+            } catch (sqlEx: SQLException) {
+            }
+            stmt = null
+        }
+        if (conn != null) {
+            try {
+                conn!!.close()
+            } catch (sqlEx: SQLException) {
+            }
+            conn = null
+        }
+    }
+    return null
+}
+
+
+fun query(queryString:String) {
+    getConn()
+    var stmt: Statement? = null
+    try {
+        stmt = conn!!.createStatement()
+        stmt!!.execute(queryString)
+    } catch (ex: SQLException) {
+        ex.printStackTrace()
+    } finally {
+        if (stmt != null) {
+            try {
+                stmt.close()
+            } catch (sqlEx: SQLException) {
+            }
+            stmt = null
+        }
+        if (conn != null) {
+            try {
+                conn!!.close()
+            } catch (sqlEx: SQLException) {
+            }
+            conn = null
+        }
+    }
+}
+
+fun getConn() {
+    try {
+        val connectionProps = Properties()
+        connectionProps.put("user", "ellen")
+        connectionProps.put("password", "qw12qw12")
+
+        Class.forName("com.mysql.jdbc.Driver")
+        conn = DriverManager.getConnection(
+            "jdbc:" + "mysql" + "://" +
+                    "192.168.1.100" +
+                    ":" + "3306" + "/study" +
+                    "",
+            connectionProps
+        )
+    } catch (ex: SQLException) {
+        ex.printStackTrace()
+    } catch (ex: Exception) {
+        ex.printStackTrace()
+    }
+}
