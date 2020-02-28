@@ -1,7 +1,9 @@
 package data
 
-data class taeYoungMoney(
-    var money : Int,
-    var comment : String
+data class MoneyData(
+    var money: Int,
+    var comment: String,
+    var idVal: Int
 )
 
+var myMoneyData = ArrayList<MoneyData>()
