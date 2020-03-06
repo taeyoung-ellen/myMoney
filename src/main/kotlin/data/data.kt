@@ -4,21 +4,22 @@ import java.sql.*
 import java.util.*
 import kotlin.collections.ArrayList
 
-data class MoneyData(
-    var money: Int,
-    var comment: String,
-    var idVal: Int
-)
+//data class MoneyData(
+//    var money: Int,
+//    var comment: String,
+//    var idVal: Int
+//)
 
-var myMoneyData = ArrayList<MoneyData>()
+//var myMoneyData = ArrayList<MoneyData>()
 
 /////////////////
 
-data class User(val num: Int, val price : Int, val memo: String, val day : Timestamp)
+data class MyMoney(val num: Int, val price : Int, val memo: String, val day : Timestamp)
+//data class TotalMoney(val price: Int)
 
 internal var conn: Connection? = null
 
-fun selectQuery(queryString: String): ArrayList<User>? {
+fun selectQuery(queryString: String): ArrayList<MyMoney>? {
     getConn()
     var stmt: Statement? = null
     var resultset: ResultSet? = null
@@ -29,10 +30,10 @@ fun selectQuery(queryString: String): ArrayList<User>? {
             resultset = stmt.resultSet
         }
 
-        var users = ArrayList<User>()
+        var moneyData = ArrayList<MyMoney>()
         while (resultset!!.next()) {
-            users.add(
-                User(
+            moneyData.add(
+                MyMoney(
                     resultset.getInt("num"),
                     resultset.getInt("price"),
                     resultset.getString("memo"),
@@ -41,7 +42,51 @@ fun selectQuery(queryString: String): ArrayList<User>? {
             )
         }
 
-        return users
+        return moneyData
+    } catch (ex: SQLException) {
+        ex.printStackTrace()
+    } finally {
+        if (resultset != null) {
+            try {
+                resultset.close()
+            } catch (sqlEx: SQLException) {
+            }
+            resultset = null
+        }
+        if (stmt != null) {
+            try {
+                stmt.close()
+            } catch (sqlEx: SQLException) {
+            }
+            stmt = null
+        }
+        if (conn != null) {
+            try {
+                conn!!.close()
+            } catch (sqlEx: SQLException) {
+            }
+            conn = null
+        }
+    }
+    return null
+}
+
+fun sumQuery(queryString: String): Int? {
+    getConn()
+    var stmt: Statement? = null
+    var resultset: ResultSet? = null
+
+    try {
+        stmt = conn!!.createStatement()
+        if (stmt.execute(queryString)) {
+            resultset = stmt.resultSet
+        }
+
+        var moneyData = 0
+        resultset!!.next()
+        moneyData = resultset.getInt("total")
+
+        return moneyData
     } catch (ex: SQLException) {
         ex.printStackTrace()
     } finally {
